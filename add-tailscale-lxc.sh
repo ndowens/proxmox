@@ -24,7 +24,6 @@ function msg_ok() { echo -e " \e[1;32m✔\e[0m $1"; }
 function msg_error() { echo -e " \e[1;31m✖\e[0m $1"; }
 
 header_info
-apt install bind9-utils -y
 if ! command -v pveversion &>/dev/null; then
   msg_error "This script must be run on the Proxmox VE host (not inside an LXC container)"
   exit 1
@@ -82,12 +81,12 @@ VER=$(grep "^VERSION_CODENAME=" /etc/os-release | cut -d"=" -f2)
 ORIG_RESOLV="/etc/resolv.conf"
 BACKUP_RESOLV="/tmp/resolv.conf.backup"
 
-if ! dig +short pkgs.tailscale.com | grep -qvE "^127\.|^0\.0\.0\.0$"; then
+#if ! dig +short pkgs.tailscale.com | grep -qvE "^127\.|^0\.0\.0\.0$"; then
   echo "[INFO] DNS resolution for pkgs.tailscale.com failed (blocked or redirected)."
   echo "[INFO] Temporarily overriding /etc/resolv.conf with Cloudflare DNS (1.1.1.1)"
   cp "$ORIG_RESOLV" "$BACKUP_RESOLV"
   echo "nameserver 1.1.1.1" >"$ORIG_RESOLV"
-fi
+#fi
 
 curl -fsSL https://pkgs.tailscale.com/stable/${ID}/${VER}.noarmor.gpg \
   | tee /usr/share/keyrings/tailscale-archive-keyring.gpg >/dev/null
